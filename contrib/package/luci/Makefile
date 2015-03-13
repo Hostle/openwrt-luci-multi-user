@@ -224,6 +224,7 @@ endef
 
 $(eval $(call module,admin-mini,LuCI Essentials - stripped down and user-friendly,+luci-base @BROKEN))
 $(eval $(call module,admin-full,LuCI Administration - full-featured for full control,+luci-base))
+$(eval $(call module,admin-full,LuCI Multi-User - LuCI Multi-User Implimentatoin v 1.00,+luci-mod-admin-full))
 $(eval $(call module,failsafe,LuCI Fail-Safe - Fail-Safe sysupgrade module,+luci-base))
 $(eval $(call module,rpc,LuCI RPC - JSON-RPC API,+luci-lib-json))
 
