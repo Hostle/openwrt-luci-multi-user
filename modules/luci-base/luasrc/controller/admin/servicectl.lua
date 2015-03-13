@@ -25,7 +25,7 @@ local valid_users = {}
 end
 
 function action_status()
-	local data = nixio.fs.readfile("/var/run/luci-reload-status")
+	local data = nixio.fs.readfile("/var/run/luci-reload-status") 
 	if data then
 		luci.http.write("/etc/config/")
 		luci.http.write(data)
