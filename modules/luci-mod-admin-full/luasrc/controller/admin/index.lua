@@ -25,7 +25,7 @@ local valid_users = {}
 		root.index = true
 	end
 	local page   = node("admin")
-	page.target  = firstchild()
+	page.target  = firstchild() 
 	page.title   = _("Administration")
 	page.order   = 10
 	page.sysauth = valid_users
