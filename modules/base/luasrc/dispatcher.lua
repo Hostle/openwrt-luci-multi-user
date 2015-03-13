@@ -33,6 +33,9 @@ local http = require "luci.http"
 local nixio = require "nixio", require "nixio.util"
 
 module("luci.dispatcher", package.seeall)
+local multi_user
+if fs.stat("/usr/lib/lua/luci/users.lua") then multi_user = true end
+if multi_user then usw = require "luci.users" end
 context = util.threadlocal()
 uci = require "luci.model.uci"
 i18n = require "luci.i18n"
@@ -418,13 +421,92 @@ function dispatch(request)
 		ctx.requested = ctx.requested or ctx.dispatched
 	end
 
+	if multi_user then
+	  function remove_idx(  tbl, index )
+	  -- initiate variables for save procedure
+  	  local tables,lookup = { tbl },{ [tbl] = 1 }
+	    for idx,t in ipairs( tables ) do
+              local thandled = {}
+	      for i,v in ipairs( t ) do
+	        thandled[i] = true
+		local stype = type( v )
+		-- only handle value
+		if stype == "table" then
+                  if not lookup[v] then
+                    table.insert( tables, v )
+                    lookup[v] = #tables
+                  end
+                else
+                  if i == index then
+                    t[i] = nil
+                   return
+                  end
+                end
+              end
+
+              for i,v in pairs( t ) do
+                -- escape handled values
+                if (not thandled[i]) then
+                  local flag = 0
+	          local stype = type( i )
+                  -- handle index
+                  if stype == "table" then
+                    if not lookup[i] then
+                      table.insert( tables,i )
+                      lookup[i] = #tables
+                    end
+                  else
+                    flag = 1
+                    if i == index then
+                      t[i] = nil
+                     return
+                    end
+                  end
+
+                  if flag == 1 then
+                   stype = type( v )
+                   -- handle value
+                   if stype == "table" then
+                     if not lookup[v] then
+                       table.insert( tables,v )
+                       lookup[v] = #tables
+                     end
+                   else
+                     if i == index then
+                       t[i] = nil
+                      return
+                     end
+                   end
+                 end
+	       end
+             end
+	   end
+         end 
+       end
+
 	if c and c.index then
 		local tpl = require "luci.template"
 
 		if util.copcall(tpl.render, "indexer", {}) then
 			return true
 		end
-	end
+        end
+
+       if multi_user then
+         local nuser = http.getenv("HTTP_AUTH_USER")
+	 if nuser ~= "root" then
+	   if ctx.authuser ~= "root" then
+             if ctx.authuser ~= nil and nuser ~= "root" then
+	       local username = nuser or ctx.authuser
+	       local menus = {}
+	       usw.hide_menus(username,menus)
+	       for i,v in pairs(menus) do
+	         remove_idx(ctx.tree, v)
+	       end
+	     end
+	   end
+         end
+       end
 
 	if type(target) == "function" then
 		util.copcall(function()
@@ -956,4 +1038,21 @@ translate = i18n.translate
 -- is used by build/i18n-scan.pl to find translatable entries.
 function _(text)
 	return text
+end
+
+if multi_user then
+  function index_list(menu)
+    menu = {}
+    line = ""
+    createindex()
+    k= 1
+    for i,v in pairs(index) do
+      line = i:sub(23)
+      if line ~= "index" and line ~= "ll" and line ~= "servicectl" and line ~= "uci" and line ~= "filebrowser" and line ~= "users" then
+        menu[k]=line
+        k= k + 1
+      end
+    end
+   return menu	
+  end
 end
