@@ -12,10 +12,25 @@ You may obtain a copy of the License at
 $Id$
 ]]--
 
+--[[ multi-user support added by Hostle 12/12/14 ]]--
+
 module("luci.controller.admin.servicectl", package.seeall)
 
 function index()
-	entry({"servicectl"}, alias("servicectl", "status")).sysauth = "root"
+--## Multi User ##--
+local fs = require "nixio.fs"
+local valid_users = {}
+
+--## load system users into tbl ##--
+  if fs.stat("/usr/lib/lua/luci/users.lua") then
+    local usw = require "luci.users"
+    valid_users = usw.login()
+  else
+--## no multi user so root is only valid user ##--
+    valid_users = { "root" }
+  end
+
+	entry({"servicectl"}, alias("servicectl", "status")).sysauth = valid_users
 	entry({"servicectl", "status"}, call("action_status")).leaf = true
 	entry({"servicectl", "restart"}, call("action_restart")).leaf = true
 end
