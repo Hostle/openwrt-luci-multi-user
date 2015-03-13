@@ -418,53 +418,18 @@ function dispatch(request)
 	end
 
 	if multi_user then
-	function remove_idx(  tbl, index )
-	-- initiate variables for save procedure
-  	local tables,lookup = { tbl },{ [tbl] = 1 }
-    	  for idx,t in ipairs( tables ) do
-      	  local thandled = {}
-            for i,v in ipairs( t ) do
-              thandled[i] = true
-              local stype = type( v )
-              -- only handle value
-              if stype == "table" then
-                if not lookup[v] then
-                  table.insert( tables, v )
-                  lookup[v] = #tables
-                end
-              else
-                if i == index then
-                  t[i] = nil
-                  return
-                end
-              end
-            end
-
-        for i,v in pairs( t ) do
-        -- escape handled values
-          if (not thandled[i]) then
-            local flag = 0
-	    local stype = type( i )
-            -- handle index
-            if stype == "table" then
-              if not lookup[i] then
-              table.insert( tables,i )
-              lookup[i] = #tables
-            end
-              else
-                flag = 1
-                if i == index then
-                  t[i] = nil
-                  return
-                end
-              end
-
-              if flag == 1 then
-                stype = type( v )
-                -- handle value
+	  function remove_idx(  tbl, index )
+	    -- initiate variables for save procedure
+  	    local tables,lookup = { tbl },{ [tbl] = 1 }
+    	    for idx,t in ipairs( tables ) do
+      	      local thandled = {}
+              for i,v in ipairs( t ) do
+                thandled[i] = true
+                local stype = type( v )
+                -- only handle value
                 if stype == "table" then
                   if not lookup[v] then
-                    table.insert( tables,v )
+                    table.insert( tables, v )
                     lookup[v] = #tables
                   end
                 else
@@ -474,9 +439,44 @@ function dispatch(request)
                   end
                 end
               end
-             end
+              
+              for i,v in pairs( t ) do
+                -- escape handled values
+                if (not thandled[i]) then
+                  local flag = 0
+	          local stype = type( i )
+                  -- handle index
+                  if stype == "table" then
+                    if not lookup[i] then
+                      table.insert( tables,i )
+                      lookup[i] = #tables
+                    end
+                  else
+                    flag = 1
+                    if i == index then
+                      t[i] = nil
+                     return
+                    end
+                  end
+
+                  if flag == 1 then
+                    stype = type( v )
+                    -- handle value
+                    if stype == "table" then
+                      if not lookup[v] then
+                        table.insert( tables,v )
+                        lookup[v] = #tables
+                      end
+                    else
+                      if i == index then
+                        t[i] = nil
+                       return
+                      end
+                    end
+                  end
+                end
+              end
             end
-           end
           end 
 	end
 	
