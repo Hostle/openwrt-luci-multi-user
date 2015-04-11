@@ -480,6 +480,26 @@ function dispatch(request)
           end 
 	end
 	
+	if multi_user then
+	  local url =  table.concat(request, "/")
+	  local menus = {}
+          local nuser = http.getenv("HTTP_AUTH_USER")
+	  if ctx.authuser ~= "root" then
+            if ctx.authuser ~= nil and nuser ~= "root" then
+	      local username = nuser or ctx.authuser
+	      usw.hide_menus(username,menus)
+	      for i,v in pairs(menus) do
+	        if url:find(v) then
+		  error404("No page is registered at '/" .. table.concat(request, "/") .. "'.\n" ..
+		           "If this url belongs to an extension, make sure it is properly installed.\n" ..
+		           "If the extension was recently installed, try removing the /tmp/luci-indexcache file.")
+	          return
+	        end
+	      end
+	    end
+	  end
+	end
+	
 	if c and c.index then
 		local tpl = require "luci.template"
 
@@ -956,6 +976,29 @@ translate = i18n.translate
 -- is used by build/i18n-scan.pl to find translatable entries.
 function _(text)
 	return text
+end
+
+if multi_user then
+    local function get_user()
+    local fs = require "nixio.fs"
+    local http = require "luci.http"
+    local util = require "luci.util"
+    local sess = luci.http.getcookie("sysauth")
+    local sdat = (util.ubus("session", "get", { ubus_rpc_session = sess }) or { }).values
+    if sdat then 
+	  user = sdat.user
+	  return(user)
+    elseif http.formvalue("username") then
+	  user = http.formvalue("username")
+	  return(user)
+    elseif http.getenv("HTTP_AUTH_USER") then
+	  user = http.getenv("HTTP_AUTH_USER")
+	  return(user)
+    else
+	  user = "nobody"
+	  return(user)
+    end
+  end
 end
 
 if multi_user then
