@@ -20,7 +20,7 @@ function index()
 	entry({"admin", "system", "system"}, cbi("admin_system/system"), _("System"), 1)
 	entry({"admin", "system", "clock_status"}, call("action_clock_status"))
 
-	entry({"admin", "system", "admin"}, cbi("admin_system/admin"), _("Administration"), 2)
+	entry({"admin", "system", "admins"}, cbi("admin_system/admins"), _("Administration"), 2)
 
 	if nixio.fs.access("/bin/opkg") then
 		entry({"admin", "system", "packages"}, call("action_packages"), _("Software"), 10)
