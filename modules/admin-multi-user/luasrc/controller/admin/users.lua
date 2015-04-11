@@ -17,29 +17,10 @@ You may obtain a copy of the License at
 module("luci.controller.admin.users", package.seeall)
 
 function index()
-local fs = require "nixio.fs"
-local sauth = require "luci.sauth"
-local http = require "luci.http"
-local sess = luci.http.getcookie("sysauth")
-local sdat = sauth.read(sess)
+local nw = require "luci.dispatcher"
 
-local function get_user()
-  if sdat then 
-	user = sdat.user
-	return(user)
-  elseif http.formvalue("username") then
-	user = http.formvalue("username")
-	return(user)
-  elseif http.getenv("HTTP_AUTH_USER") then
-	user = http.getenv("HTTP_AUTH_USER")
-	return(user)
-  else
-	user = "nobody"
-	return(user)
-  end
-end
 
-	local user = get_user()
+	local user = nw.get_user()
 	if user == "root" then
 	  entry({"admin", "users"}, alias("admin", "users", "users"), _("Edit Users"), 55).index = true
 	  entry({"admin", "users", "users"}, cbi("admin_users/users"), _("User Options"), 60)
