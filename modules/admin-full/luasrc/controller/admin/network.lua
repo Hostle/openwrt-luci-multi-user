@@ -138,8 +138,8 @@ function index()
 			page.order  = 40
 		end
 
-		page  = node("admin", "network", "routes")
-		page.target = cbi("admin_network/routes")
+		page  = node("admin", "network", "netroutes")
+		page.target = cbi("admin_network/netroutes")
 		page.title  = _("Static Routes")
 		page.order  = 50
 
