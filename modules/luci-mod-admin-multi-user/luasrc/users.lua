@@ -64,6 +64,7 @@ function process_ui_user(tbuf)
   local nbuf = {}
   local user = users:new()
   local line = ""
+  local menu_items = ""
 
 	for k,v in pairs(tbuf) do
 	  if v:find("option name") then
@@ -78,11 +79,50 @@ function process_ui_user(tbuf)
 	   shell = v:sub(v:find("option")+14,-2)
 	   nbuf["shell"]=shell
 	  end
-	  if v:find("menu_items") then
-	   menu_items = v:sub(v:find("option")+19,-2)
-	   nbuf["menu_items"]=menu_items
+	   if v:find("status_menu") then
+	   status_menu = v:sub(v:find("option")+20,-2)
+	   nbuf["status_menu"]=status_menu
+	  end
+	   if v:find("system_menu") then
+	   system_menu = v:sub(v:find("option")+20,-2)
+	   nbuf["system_menu"]=system_menu
+	  end
+	   if v:find("network_menu") then
+	   network_menu = v:sub(v:find("option")+21,-2)
+	   nbuf["network_menu"]=network_menu
+	  end
+	   if v:find("status_subs") then
+	   status_subs = v:sub(v:find("option")+20,-2)
+	   nbuf["status_subs"]=status_subs
+	  end
+	   if v:find("system_subs") then
+	   system_subs = v:sub(v:find("option")+20,-2)
+	   nbuf["system_subs"]=system_subs
+	  end
+	   if v:find("network_subs") then
+	   network_subs = v:sub(v:find("option")+21,-2)
+	   nbuf["network_subs"]=network_subs 
 	  end
 	end
+	if nbuf.status_menu and nbuf.status_menu ~= "nil" then
+	menu_items =  menu_items .. " " .. nbuf.status_menu
+	end
+	if nbuf.system_menu and nbuf.system_menu ~= "nil" then
+	menu_items =  menu_items .. " " .. nbuf.system_menu
+	end
+	if nbuf.network_menu and nbuf.network_menu ~= "nil" then
+	menu_items =  menu_items .. " " .. nbuf.network_menu
+	end
+	if nbuf.network_subs then
+	menu_items = menu_items .. " " .. nbuf.network_subs
+	end
+	if nbuf.system_subs then
+	menu_items = menu_items .. " " .. nbuf.system_subs
+	end
+	if nbuf.status_subs then
+	menu_items = menu_items .. " " .. nbuf.status_subs
+	end
+        nbuf.menu_items = menu_items:sub(2,-1)
 
 	user = users:new({ name = nbuf.name, user_group = nbuf.user_group, shell = nbuf.shell, 
 			           menu_items = nbuf.menu_items })
@@ -107,13 +147,13 @@ function load_ui_user_file()
 	  end
 	end
 	file:close()
-
 	for i=1, #buf do
 	  if buf[i]:find("config user") then
-	   buft[1]= buf[i+1]
-	   buft[2]= buf[i+2]
-	   buft[3]= buf[i+3]
-	   buft[4]= buf[i+4]
+	   j = 1
+	   repeat
+	   buft[j]= buf[i+j]
+	   j = j + 1
+	   until buf[j] ==  ""
 	   process_ui_user(buft) --## send user to be added to ui_users 
 	  end
 	end
