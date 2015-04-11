@@ -22,30 +22,9 @@ $Id: users.lua 12/12/2014 by Hostle
 module("luci.controller.admin.users", package.seeall)
 
 function index()
-local fs = require "nixio.fs"
-local http = require "luci.http"
-local util = require "luci.util"
-local sess = luci.http.getcookie("sysauth")
-local sdat = (util.ubus("session", "get", { ubus_rpc_session = sess }) or { }).values
+local nw = require "luci.dispatcher"
 
---## get user anywhere i can find it ??? ##--
-  local function get_user()
-  if sdat then 
-	  user = sdat.user
-	  return(user)
-  elseif http.formvalue("username") then
-	  user = http.formvalue("username")
-	  return(user)
-  elseif http.getenv("HTTP_AUTH_USER") then
-	  user = http.getenv("HTTP_AUTH_USER")
-	  return(user)
-  else
-	  user = "nobody"
-	  return(user)
-  end
-end
-
-	local user = get_user()
+	local user = nw.get_user()
 	if user == "root" then
 	  entry({"admin", "users"}, alias("admin", "users", "users"), _("Edit Users"), 55).index = true
 	  entry({"admin", "users", "users"}, cbi("admin_users/users"), _("User Options"), 60)
