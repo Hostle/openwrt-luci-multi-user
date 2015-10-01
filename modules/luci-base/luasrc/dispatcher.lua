@@ -979,7 +979,7 @@ function _(text)
 end
 
 if multi_user then
-    local function get_user()
+    function get_user()
     local fs = require "nixio.fs"
     local http = require "luci.http"
     local util = require "luci.util"
