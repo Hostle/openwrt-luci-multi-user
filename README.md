@@ -1,5 +1,8 @@
 # OpenWrt luci feed
 
+## New Users Default Password
+when a user is first created there password is set to "openwrt" by default. Once the new users logs in, the user may set the password to something else
+
 ## Description
 
 This is the OpenWrt "luci"-feed containing LuCI - OpenWrt Configuration Interface.
