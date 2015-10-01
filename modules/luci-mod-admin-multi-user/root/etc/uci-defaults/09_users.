@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#####################################
+## Copyright (C) 2015 Openwrt      ##
+## Create default users file       ## 
+## By Hostle 9/30/2015             ##
+#####################################
+
+## Create the /etc/config/users File ##
+touch /etc/config/users
+
+exit 0
