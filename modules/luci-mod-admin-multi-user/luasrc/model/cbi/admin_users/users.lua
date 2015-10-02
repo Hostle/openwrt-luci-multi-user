@@ -84,7 +84,7 @@ o.enabled = "admins"
 system_subs = s:taboption("system", MultiValue, "system_subs", translate("System Menus"))
 system_subs.rmempty = true
 system_subs:depends("system_menu", "admins")
---system_subs:value("system", "System")
+system_subs:value("system_tab", "System")
 --system_subs:value("admin", "Administration")
 system_subs:value("packages", "Software")
 system_subs:value("startup", "Startup")
@@ -101,8 +101,9 @@ o.enabled = "nil"
 network_subs = s:taboption("network", MultiValue, "network_subs", translate("Network Menus"))
 network_subs.rmempty = true
 network_subs:depends("network_menu", "nil")
---network_subs:value("network", "Interfaces")
+network_subs:value("network_tab", "Interfaces")
 network_subs:value("wireless", "Wifi")
+network_subs:value("vlan", "Switch")
 network_subs:value("dhcp", "DHCP and DNS")
 network_subs:value("hosts", "Hostnames")
 network_subs:value("netroutes", "Static Routes")
