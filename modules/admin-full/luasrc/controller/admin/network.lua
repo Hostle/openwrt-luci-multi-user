@@ -107,7 +107,7 @@ function index()
 		page = entry({"admin", "network", "iface_shutdown"}, call("iface_shutdown"), nil)
 		page.leaf = true
 
-		page = entry({"admin", "network", "network"}, arcombine(cbi("admin_network/network"), cbi("admin_network/ifaces")), _("Interfaces"), 10)
+		page = entry({"admin", "network", "network_tab"}, arcombine(cbi("admin_network/network_tab"), cbi("admin_network/ifaces")), _("Interfaces"), 10)
 		page.leaf   = true
 		page.subindex = true
 
