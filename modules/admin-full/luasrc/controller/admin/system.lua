@@ -17,7 +17,7 @@ module("luci.controller.admin.system", package.seeall)
 
 function index()
 	entry({"admin", "system"}, alias("admin", "system", "system"), _("System"), 30).index = true
-	entry({"admin", "system", "system"}, cbi("admin_system/system"), _("System"), 1)
+	entry({"admin", "system", "system_tab"}, cbi("admin_system/system_tab"), _("System"), 1)
 	entry({"admin", "system", "clock_status"}, call("action_clock_status"))
 
 	entry({"admin", "system", "admin"}, cbi("admin_system/admin"), _("Administration"), 2)
