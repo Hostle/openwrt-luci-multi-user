@@ -19,7 +19,7 @@ local utl = require "luci.util"
 local uci = require "luci.model.uci".cursor()
 
 m = SimpleForm("network", translate("Create Interface"))
-m.redirect = luci.dispatcher.build_url("admin/network/network")
+m.redirect = luci.dispatcher.build_url("admin/network/network_tab")
 m.reset = false
 
 newnet = m:field(Value, "_netname", translate("Name of the new interface"),
@@ -97,7 +97,7 @@ function newproto.write(self, section, value)
 			nw:save("network")
 			nw:save("wireless")
 		end
-		luci.http.redirect(luci.dispatcher.build_url("admin/network/network", name))
+		luci.http.redirect(luci.dispatcher.build_url("admin/network/network_tab", name))
 	end
 end
 
