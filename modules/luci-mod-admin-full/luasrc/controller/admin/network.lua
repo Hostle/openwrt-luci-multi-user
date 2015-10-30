@@ -106,7 +106,7 @@ function index()
 				function (section)
 					local ifc = section[".name"]
 					if ifc ~= "loopback" then
-						entry({"admin", "network", "network", ifc},
+						entry({"admin", "network", "network_tab", ifc},
 						true, ifc:upper())
 					end
 				end)
