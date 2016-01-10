@@ -1,31 +1,20 @@
--- Copyright 2008 Steven Barth <steven@midlink.org>
+\-- Copyright 2008 Steven Barth <steven@midlink.org>
 -- Licensed to the public under the Apache License 2.0.
---[[ Multi user support added by Hostle 12/12/14
 
-src for "function remove_idx "provided by yegorich posted here: http://stackoverflow.com/questions/18377138/openwrt-luci-how-to-implement-limited-user-access
-
-line 21 added multi_user variable
-line 23 added conditional test to determine if multi-user support is needed
-line 24 added conditional multi user library dependentcies
-
-following functions are only enabled if multi_user conditon = true
-lines 420 -> 481 added remove_idx function to remove menus from index tree
-lines 491 -> 505 adapted function by yegorich to get user selection for which menu's to be remove from tree
-lines 961 -> 976 added function to retrieve list of menus to be removed from index tree
-]]--
 local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local util = require "luci.util"
 local http = require "luci.http"
 local nixio = require "nixio", require "nixio.util"
-local multi_user
+
 module("luci.dispatcher", package.seeall)
-if fs.stat("/usr/lib/lua/luci/users.lua") then multi_user = true end
-if multi_user then usw = require "luci.users" end
 context = util.threadlocal()
 uci = require "luci.model.uci"
 i18n = require "luci.i18n"
 _M.fs = fs
+
+if fs.stat("/usr/lib/lua/luci/users.lua") then multi_user = true end
+if multi_user then usw = require "luci.users" end
 
 authenticator = {}
 
@@ -417,89 +406,6 @@ function dispatch(request)
 		ctx.requested = ctx.requested or ctx.dispatched
 	end
 
-	if multi_user then
-	  function remove_idx(  tbl, index )
-	    -- initiate variables for save procedure
-  	    local tables,lookup = { tbl },{ [tbl] = 1 }
-    	    for idx,t in ipairs( tables ) do
-      	      local thandled = {}
-              for i,v in ipairs( t ) do
-                thandled[i] = true
-                local stype = type( v )
-                -- only handle value
-                if stype == "table" then
-                  if not lookup[v] then
-                    table.insert( tables, v )
-                    lookup[v] = #tables
-                  end
-                else
-                  if i == index then
-                    t[i] = nil
-                    return
-                  end
-                end
-              end
-              
-              for i,v in pairs( t ) do
-                -- escape handled values
-                if (not thandled[i]) then
-                  local flag = 0
-	          local stype = type( i )
-                  -- handle index
-                  if stype == "table" then
-                    if not lookup[i] then
-                      table.insert( tables,i )
-                      lookup[i] = #tables
-                    end
-                  else
-                    flag = 1
-                    if i == index then
-                      t[i] = nil
-                     return
-                    end
-                  end
-
-                  if flag == 1 then
-                    stype = type( v )
-                    -- handle value
-                    if stype == "table" then
-                      if not lookup[v] then
-                        table.insert( tables,v )
-                        lookup[v] = #tables
-                      end
-                    else
-                      if i == index then
-                        t[i] = nil
-                       return
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end 
-	end
-	
-	if multi_user then
-	  local url =  table.concat(request, "/")
-	  local menus = {}
-          local nuser = http.getenv("HTTP_AUTH_USER")
-	  if ctx.authuser ~= "root" then
-            if ctx.authuser ~= nil and nuser ~= "root" then
-	      local username = nuser or ctx.authuser
-	      usw.hide_menus(username,menus)
-	      for i,v in pairs(menus) do
-	        if url:find(v) then
-		  error404("No page is registered at '/" .. table.concat(request, "/") .. "'.\n" ..
-		           "If this url belongs to an extension, make sure it is properly installed.\n" ..
-		           "If the extension was recently installed, try removing the /tmp/luci-indexcache file.")
-	          return
-	        end
-	      end
-	    end
-	  end
-	end
-	
 	if c and c.index then
 		local tpl = require "luci.template"
 
@@ -508,22 +414,6 @@ function dispatch(request)
 		end
 	end
 
-	if multi_user then
-          local nuser = http.getenv("HTTP_AUTH_USER")
-	  if nuser ~= "root" then
-	    if ctx.authuser ~= "root" then
-	      if ctx.authuser ~= nil and nuser ~= "root" then
-	        local username = nuser or ctx.authuser
-	        local menus = {}
-		usw.hide_menus(username,menus)
-		for i,v in pairs(menus) do
-		  remove_idx(ctx.tree, v)
-		end
-	      end
-	    end
-	  end
-	end
-	
 	if type(target) == "function" then
 		util.copcall(function()
 			local oldenv = getfenv(target)
