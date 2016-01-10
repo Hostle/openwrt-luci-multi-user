@@ -23,6 +23,11 @@ local ui_usernames = {}
 local sys_usernames = {}
 local valid_users = {}
 
+--## global menu buffers ##--
+local status = {}
+local system = {}
+local network = {}
+
 --## debugging ##--
 local debug = 0
 local logfile = "/tmp/users.log"
@@ -37,7 +42,13 @@ function users:new(user)
 	return user
 end
 
-
+--## create user menu buffers ##--
+function make_buf(str,buf)
+  for word in string.gmatch(str, "[^%s]+") do
+   buf[#buf+1] = word
+  end
+ return buf
+end
 
 --## login function to provide valid usernames, used by dispatcher,index and serviceclt ##--
 function login()
@@ -79,56 +90,37 @@ function process_ui_user(tbuf)
 	   shell = v:sub(v:find("option")+14,-2)
 	   nbuf["shell"]=shell
 	  end
-	   if v:find("status_menu") then
-	   status_menu = v:sub(v:find("option")+20,-2)
-	   nbuf["status_menu"]=status_menu
+	  if v:find("Status_menus") then
+	   status_menu = v:sub(v:find("option")+21,-2)
+	   make_buf(status_menu, status)
 	  end
-	   if v:find("system_menu") then
-	   system_menu = v:sub(v:find("option")+20,-2)
-	   nbuf["system_menu"]=system_menu
+	   if v:find("System_menus") then
+	   system_menu = v:sub(v:find("option")+21,-2)
+	   make_buf(system_menu, system)
 	  end
-	   if v:find("network_menu") then
-	   network_menu = v:sub(v:find("option")+21,-2)
-	   nbuf["network_menu"]=network_menu
+	   if v:find("Network_menus") then
+	   network_menu = v:sub(v:find("option")+22,-2)
+	   make_buf(network_menu, network)
 	  end
 	   if v:find("status_subs") then
 	   status_subs = v:sub(v:find("option")+20,-2)
-	   nbuf["status_subs"]=status_subs
+	   make_buf(status_subs, status)
 	  end
 	   if v:find("system_subs") then
 	   system_subs = v:sub(v:find("option")+20,-2)
-	   nbuf["system_subs"]=system_subs
+	   make_buf(system_subs, system)
 	  end
-	   if v:find("network_subs") then
+	  if v:find("network_subs") then
 	   network_subs = v:sub(v:find("option")+21,-2)
-	   nbuf["network_subs"]=network_subs 
+	   make_buf(network_subs, network)
 	  end
 	end
-	if nbuf.status_menu and nbuf.status_menu ~= "nil" then
-	menu_items =  menu_items .. " " .. nbuf.status_menu
-	end
-	if nbuf.system_menu and nbuf.system_menu ~= "nil" then
-	menu_items =  menu_items .. " " .. nbuf.system_menu
-	end
-	if nbuf.network_menu and nbuf.network_menu ~= "nil" then
-	menu_items =  menu_items .. " " .. nbuf.network_menu
-	end
-	if nbuf.network_subs then
-	menu_items = menu_items .. " " .. nbuf.network_subs
-	end
-	if nbuf.system_subs then
-	menu_items = menu_items .. " " .. nbuf.system_subs
-	end
-	if nbuf.status_subs then
-	menu_items = menu_items .. " " .. nbuf.status_subs
-	end
-        nbuf.menu_items = menu_items:sub(2,-1)
 
-	user = users:new({ name = nbuf.name, user_group = nbuf.user_group, shell = nbuf.shell, 
-			           menu_items = nbuf.menu_items })
+	user = users:new({ name = nbuf.name, user_group = nbuf.user_group, shell = nbuf.shell,
+		           status = status, system = system, network = network })
 
 	ui_users[user.name] = { user_group = nbuf.user_group, shell = nbuf.shell, 
-				            menu_items = nbuf.menu_items }  --## add user and info to ui_users buffer
+				status = status, system = system, network = network }  --## add user and info to ui_users buffer
 
 	ui_usernames[#ui_usernames+1]=user.name --## keep track of ui_usernames
 end
@@ -281,16 +273,12 @@ end
 
 --## function used by dispatcher to remove specified menus from index tree ##--
 --## Called by disatcher to determine what menus should be visible ##-- 
-function hide_menus(user,menus)
-	  if user == nil then return end
-	  local x = 1
-	  load_ui_user_file()
-	  local h_menus = ui_users[user].menu_items
-
-	  for token in string.gmatch(h_menus, "[^%s]+") do
-      	      menus[x]=token
-	      x = x + 1
-	  end
+function hide_menus(user,name)
+	  if user == nil or user == "nobody" then return end
+	  if name ~= "status" and name ~= "system" and name ~= "network" then return end
+	    local x = 1
+	    load_ui_user_file()
+	    menus = ui_users[user][name]
 	  return(menus)
 end
 
@@ -550,3 +538,4 @@ function delete_user(user)
 	luci.sys.call("rm /home/"..user.."/*")
 	fs.rmdir("/home/"..user)
 end
+
