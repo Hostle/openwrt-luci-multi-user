@@ -7,14 +7,37 @@ module("luci.controller.admin.network", package.seeall)
 function index()
 	local uci = require("luci.model.uci").cursor()
 	local page
+	local fs = require "nixio.fs"
 
-	page = node("admin", "network")
-	page.target = firstchild()
-	page.title  = _("Network")
-	page.order  = 50
-	page.index  = true
+	
+          function user(val)
+	    if not fs.access("/usr/lib/lua/luci/users.lua") then return true end
+	    local menu = {}
+            local dsp = require "luci.dispatcher"
+            local usw = require "luci.users"
+            local user = dsp.get_user()
+	    local name = "network"
+	    if user == "root" then return true end
 
+	    local menu = {}
+	    menu = usw.hide_menus(user,name) or {}
+
+  	    for i,v in pairs(menu) do
+   	      if v == val then return true end
+  	    end
+  	    return false
+	  end
+	
+	
+	if user("Network_menus") == true then
+	  page = node("admin", "network")
+	  page.target = firstchild()
+	  page.title  = _("Network")
+	  page.order  = 50
+	  page.index  = true
+	end
 --	if page.inreq then
+		if user("Switch") == true then
 		local has_switch = false
 
 		uci:foreach("network", "switch",
@@ -22,7 +45,7 @@ function index()
 				has_switch = true
 				return false
 			end)
-
+		
 		if has_switch then
 			page  = node("admin", "network", "vlan")
 			page.target = cbi("admin_network/vlan")
@@ -32,10 +55,9 @@ function index()
 			page = entry({"admin", "network", "switch_status"}, call("switch_status"), nil)
 			page.leaf = true
 		end
-
-
+		end
+		if user("Wifi") == true then
 		local has_wifi = false
-
 		uci:foreach("wireless", "wifi-device",
 			function(s)
 				has_wifi = true
@@ -80,8 +102,8 @@ function index()
 				end
 			end
 		end
-
-
+		end
+		if user("Interfaces") == true then
 		page = entry({"admin", "network", "iface_add"}, cbi("admin_network/iface_add"), nil)
 		page.leaf = true
 
@@ -97,7 +119,7 @@ function index()
 		page = entry({"admin", "network", "iface_shutdown"}, call("iface_shutdown"), nil)
 		page.leaf = true
 
-		page = entry({"admin", "network", "network_tab"}, arcombine(cbi("admin_network/network_tab"), cbi("admin_network/ifaces")), _("Interfaces"), 10)
+		page = entry({"admin", "network", "network"}, arcombine(cbi("admin_network/network"), cbi("admin_network/ifaces")), _("Interfaces"), 10)
 		page.leaf   = true
 		page.subindex = true
 
@@ -106,13 +128,13 @@ function index()
 				function (section)
 					local ifc = section[".name"]
 					if ifc ~= "loopback" then
-						entry({"admin", "network", "network_tab", ifc},
+						entry({"admin", "network", "network", ifc},
 						true, ifc:upper())
 					end
 				end)
 		end
-
-
+		end
+		if user("Dhcp") == true then
 		if nixio.fs.access("/etc/config/dhcp") then
 			page = node("admin", "network", "dhcp")
 			page.target = cbi("admin_network/dhcp")
@@ -127,12 +149,15 @@ function index()
 			page.title  = _("Hostnames")
 			page.order  = 40
 		end
-
-		page  = node("admin", "network", "netroutes")
-		page.target = cbi("admin_network/netroutes")
+		end
+		if user("Routes") == true then
+		page  = node("admin", "network", "routes")
+		page.target = cbi("admin_network/routes")
 		page.title  = _("Static Routes")
 		page.order  = 50
+		end
 
+		if user("Diagnostics") == true then
 		page = node("admin", "network", "diagnostics")
 		page.target = template("admin_network/diagnostics")
 		page.title  = _("Diagnostics")
@@ -152,6 +177,7 @@ function index()
 
 		page = entry({"admin", "network", "diag_traceroute6"}, call("diag_traceroute6"), nil)
 		page.leaf = true
+		end
 --	end
 end
 
