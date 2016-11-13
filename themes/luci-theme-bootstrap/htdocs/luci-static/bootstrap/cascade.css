@@ -230,7 +230,7 @@ h4,
 h5,
 h6 {
 	font-weight: bold;
-	color: #404040;
+	color: #8B9C9D;
 }
 
 h1 small,
@@ -1340,18 +1340,18 @@ footer {
 .cbi-page-actions .cbi-button-reset {
 	color: #ffffff;
 	padding: 5px 14px 6px;
-	background-color: #0064cd;
+	background-color: #14a6ad;
 	background-repeat: repeat-x;
-	background-image: -khtml-gradient(linear, left top, left bottom, from(#049cdb), to(#0064cd));
-	background-image: -moz-linear-gradient(top, #049cdb, #0064cd);
-	background-image: -ms-linear-gradient(top, #049cdb, #0064cd);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #049cdb), color-stop(100%, #0064cd));
-	background-image: -webkit-linear-gradient(top, #049cdb, #0064cd);
-	background-image: -o-linear-gradient(top, #049cdb, #0064cd);
-	background-image: linear-gradient(top, #049cdb, #0064cd);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#049cdb', endColorstr='#0064cd', GradientType=0);
+	background-image: -khtml-gradient(linear, left top, left bottom, from(#23c6d5), to(#14a6ad));
+	background-image: -moz-linear-gradient(top, #23c6d5, #14a6ad);
+	background-image: -ms-linear-gradient(top, #23c6d5, #14a6ad);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #23c6d5), color-stop(100%, #14a6ad));
+	background-image: -webkit-linear-gradient(top, #23c6d5, #14a6ad);
+	background-image: -o-linear-gradient(top, #23c6d5, #14a6ad);
+	background-image: linear-gradient(top, #23c6d5, #14a6ad);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#23c6d5', endColorstr='#14a6ad', GradientType=0);
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-	border-color: #0064cd #0064cd #003f81;
+	border-color: #14a6ad #14a6ad #003f81;
 	border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
 
