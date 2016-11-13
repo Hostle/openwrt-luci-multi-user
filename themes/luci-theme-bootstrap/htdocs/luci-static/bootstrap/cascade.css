@@ -788,7 +788,9 @@ header h3 a, header .brand {
     margin-left: -20px;
     color: #FFFFFF;
     background-image: url(../resources/cbi/ctrlable_logo.png);
-    background-color: #cccccc;
+    background-size: 40px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 header p {
