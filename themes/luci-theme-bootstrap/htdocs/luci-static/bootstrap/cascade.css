@@ -164,7 +164,7 @@ body {
 	font-size: 13px;
 	font-weight: normal;
 	line-height: 18px;
-	color: #404040;
+	color: #8B9C9D;
 	padding-top: 58px;
 }
 
@@ -732,11 +732,11 @@ table th {
 
 table td {
 	vertical-align: top;
-	border-top: 1px solid #1B1B1B;
+	border-top: 1px solid #4B4B4B;
 }
 
 table tbody th {
-	border-top: 1px solid #3b3b3b;
+	border-top: 1px solid #6b6b6b;
 	vertical-align: top;
 }
 
@@ -791,6 +791,8 @@ header h3 a, header .brand {
     background-size: 40px;
     background-position: center;
     background-repeat: no-repeat;
+    color: transparent;
+    width: 30px;
 }
 
 header p {
